@@ -21,6 +21,8 @@ from torchvision import transforms
 from torchvision.models import vit_b_16
 from torchvision.datasets import ImageNet
 
+import timm
+
 from matplotlib import pyplot as plt
 
 from tis import TIS
@@ -61,7 +63,9 @@ dataset_display = ImageNet(imagenet_path, transform=transform_display, split="va
 ```
 
 ```python
-vit_model = vit_b_16(weights='IMAGENET1K_V1').cuda()
+#vit_model = vit_b_16(weights='IMAGENET1K_V1').cuda()
+vit_model = timm.create_model("vit_base_patch16_224", pretrained=True).cuda()
+#vit_model = timm.create_model("deit_base_patch16_224", pretrained=True).cuda()
 ```
 
 ```python
