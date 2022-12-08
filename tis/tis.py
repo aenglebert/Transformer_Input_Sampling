@@ -1,5 +1,6 @@
 import torch
-from torchvision.models import VisionTransformer
+from torchvision.models import VisionTransformer as VisionVIT
+from timm.models.vision_transformer import VisionTransformer as TimmVIT
 
 from fast_pytorch_kmeans import KMeans
 
@@ -20,7 +21,7 @@ class TIS:
         """
 
         # Check that model is a ViT
-        assert isinstance(model, VisionTransformer), "Transformer architecture not recognised"
+        assert isinstance(model, VisionVIT) or isinstance(model, TimmVIT), "Transformer architecture not recognised"
 
         # Save model
         self.model = model
@@ -87,8 +88,16 @@ class TIS:
             # Store activations into the encoder_activations list
             self.encoder_activations.append(output.detach())
 
+        if isinstance(self.model, VisionVIT):
+            layers = self.model.encoder.layers
+        elif isinstance(self.model, TimmVIT):
+            layers = self.model.blocks
+        else:
+            print("Model not recognised")
+            exit(1)
+
         # Attach a forward hook to each transformer block
-        for layer in self.model.encoder.layers:
+        for layer in layers:
             self.encoder_hook_list.append(layer.register_forward_hook(encoder_hook_fn))
 
         # Forward pass: get the predicted class and activations are retrieved using the hooks
@@ -192,7 +201,13 @@ class TIS:
                 # return torch.cat([cls, sampled_tokens], dim=1)
 
         # Register the sampling hook at the beginning of the encoder, after the positional embedding
-        tokens_sampling_hook = self.model.encoder.dropout.register_forward_hook(tokens_sampling_hook_fn)
+        if isinstance(self.model, VisionVIT):
+            tokens_sampling_hook = self.model.encoder.dropout.register_forward_hook(tokens_sampling_hook_fn)
+        elif isinstance(self.model, TimmVIT):
+            tokens_sampling_hook = self.model.pos_drop.register_forward_hook(tokens_sampling_hook_fn)
+        else:
+            print("Model not recognised")
+            exit(1)
 
         # Compute scores by batch
         for idx in tqdm(range(math.ceil(len(mask_indices_list) / self.batch_size))):
@@ -227,9 +242,17 @@ class TIS:
         # Compute tokens coverage bias
         coverage_bias = masks.sum(-1)
 
+        if isinstance(self.model, VisionVIT):
+            patch_size = (self.model.patch_size, self.model.patch_size)
+        elif isinstance(self.model, TimmVIT):
+            patch_size = self.model.patch_embed.patch_size
+        else:
+            print("Model not recognised")
+            exit(1)
+
         # Compute the saliency map height and width
-        h = x.shape[-2] // self.model.patch_size
-        w = x.shape[-1] // self.model.patch_size
+        h = x.shape[-2] // patch_size[0]
+        w = x.shape[-1] // patch_size[1]
 
         # Correct the saliency for coverage bias and reshape and reshape in 2D
         saliency = raw_saliency / coverage_bias
