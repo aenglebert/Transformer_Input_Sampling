@@ -64,7 +64,7 @@ dataset_display = ImageNet(imagenet_path, transform=transform_display, split="va
 
 ```python
 #vit_model = vit_b_16(weights='IMAGENET1K_V1').cuda()
-vit_model = timm.create_model("vit_base_patch16_224", pretrained=True).cuda()
+vit_model = timm.create_model("vit_base_patch16_224", pretrained=True, pretrained_cfg="vit_base_patch16_224.orig_in21k_ft_in1k").cuda()
 #vit_model = timm.create_model("deit_base_patch16_224", pretrained=True).cuda()
 ```
 
@@ -81,6 +81,20 @@ print(dataset.classes[class_idx])
 image = dataset[i][0].unsqueeze(0).cuda()
 saliency = tis(image, class_idx=class_idx).cpu()
 overlay(dataset_display[i][0], saliency.cpu(), alpha=0.7)
+```
+
+```python
+import random
+
+subset_size = 5000
+
+indices = list(range(50000))
+random.shuffle(indices)
+```
+
+```python
+for indice in indices[:subset_size]:
+    print("-", indice)
 ```
 
 ```python

@@ -1,0 +1,9 @@
+defaults:
+  - model: vit
+  - method: tis
+  - dataset: ilsvrc2012_subset
+  - transform: ilsvrc2012
+  - _self_
+
+seed: 12345
+output_npz: npz/${model.name}_${method.name}.npz
