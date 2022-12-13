@@ -1,0 +1,6 @@
+name: rise_${method.init.n_masks}
+init:
+  _target_: comparison_methods.rise_wrapper.RISEWrapper
+  n_masks: 4000
+  input_size: 224
+  batch_size: 128
