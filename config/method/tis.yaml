@@ -4,3 +4,4 @@ init:
   n_masks: 2048
   batch_size: 512
   tokens_ratio: 0.25
+  verbose: false
