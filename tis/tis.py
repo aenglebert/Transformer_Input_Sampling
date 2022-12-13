@@ -10,7 +10,7 @@ import math
 
 
 class TIS:
-    def __init__(self, model, n_masks=2048, batch_size=2, tokens_ratio=0.25, normalise=True):
+    def __init__(self, model, n_masks=2048, batch_size=2, tokens_ratio=0.25, normalise=True, verbose=True):
         """
         Create a TIS class to compute saliency maps for a vision transformer
         :param model: The ViT model to explain
@@ -30,6 +30,7 @@ class TIS:
         self.batch_size = batch_size
         self.n_masks = n_masks
         self.normalise = normalise
+        self.verbose = verbose
 
         if isinstance(tokens_ratio, float):
             tokens_ratio = [tokens_ratio]
@@ -132,7 +133,7 @@ class TIS:
         mask_list = []
 
         # Create clusters with kmeans
-        kmeans = KMeans(n_clusters=self.n_masks, mode='euclidean', verbose=1)
+        kmeans = KMeans(n_clusters=self.n_masks, mode='euclidean', verbose=self.verbose)
         kmeans.fit(encoder_activations)
 
         # Use kmeans centroids as basis for masks
@@ -210,7 +211,7 @@ class TIS:
             exit(1)
 
         # Compute scores by batch
-        for idx in tqdm(range(math.ceil(len(mask_indices_list) / self.batch_size))):
+        for idx in tqdm(range(math.ceil(len(mask_indices_list) / self.batch_size)), disable=(not self.verbose)):
             # Select the masks attributed to the current batch
             selection_slice = slice(idx * self.batch_size, min((idx + 1) * self.batch_size, len(mask_indices_list)))
             self.cur_mask_indices = mask_indices_list[selection_slice]
