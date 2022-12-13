@@ -84,19 +84,5 @@ overlay(dataset_display[i][0], saliency.cpu(), alpha=0.7)
 ```
 
 ```python
-import random
-
-subset_size = 5000
-
-indices = list(range(50000))
-random.shuffle(indices)
-```
-
-```python
-for indice in indices[:subset_size]:
-    print("-", indice)
-```
-
-```python
 
 ```
