@@ -35,15 +35,18 @@ def main(cfg: DictConfig):
     seed_everything(cfg.seed)
 
     # Get model
+    print("Loading model:", cfg.model.name, end="\n\n")
     model = instantiate(cfg.model.init).cuda()
 
     # Get method
+    print("Initializing saliency method:", cfg.method.name, end="\n\n")
     method = instantiate(cfg.method.init, model)
 
     # Get transform
     transform = instantiate(cfg.transform)
 
     # Get dataset
+    print("Loading dataset", end="\n\n")
     dataset = instantiate(cfg.dataset)
 
     # Keep saliency maps in a list
@@ -63,6 +66,7 @@ def main(cfg: DictConfig):
     saliency_maps = torch.stack(saliency_maps_list)
 
     # Save as a npz
+    print("\nSaving saliency maps to file:", cfg.output_npz)
     np.savez(cfg.output_npz, saliency_maps.cpu().numpy())
 
 
