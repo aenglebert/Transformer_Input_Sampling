@@ -7,6 +7,8 @@ from hydra.utils import instantiate
 
 from omegaconf import DictConfig, OmegaConf
 
+from tqdm import tqdm
+
 import random
 
 # Try to import lovely_tensors
@@ -48,7 +50,7 @@ def main(cfg: DictConfig):
     saliency_maps_list = []
 
     # Loop over the dataset to generate the saliency maps
-    for image, class_idx in dataset:
+    for image, class_idx in tqdm(dataset, desc="Computing saliency maps"):
         image = image.unsqueeze(0).cuda()
 
         # Compute current saliency map
