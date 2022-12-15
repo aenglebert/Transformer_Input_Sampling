@@ -8,8 +8,11 @@ The activations of the network being used to produce binary masks for the tokens
 ## Requirements
 A requirements.txt file is provided to install the necessary libraries to use this method.
 
+## Requirements for comparison
 This repository also hold scripts to benchmark in comparison to other methods.
-Depending on the other methods used as comparison, additional requirements can be needed.
+
+A script is provided to configure the comparison methods repositories ( comparison_methods/configure.sh ).
+The requirements specifics to comparison methods can be installed using requirements_comparison.txt
 
 ## Usage
 
