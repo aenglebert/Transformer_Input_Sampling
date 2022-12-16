@@ -41,6 +41,21 @@ def vit_large_patch16_224(pretrained=False, model_name="vit_large_patch16_224", 
     return model
 
 
+def deit_base_patch16_224(pretrained=False, model_name="deit_base_patch16_224", **kwargs):
+    model = VisionTransformer(
+        patch_size=16, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True, **kwargs)
+    cfg = _cfg(
+        url=deit_cfgs[model_name]['url'],
+    )
+    model.default_cfg = cfg
+    if pretrained:
+        checkpoint = torch.hub.load_state_dict_from_url(
+            url=cfg['url'],
+            map_location="cpu", check_hash=True
+        )
+        model.load_state_dict(checkpoint["model"])
+    return model
+
 # Method computation
 
 class Chefer1Wrapper():
