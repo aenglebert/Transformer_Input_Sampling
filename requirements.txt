@@ -5,3 +5,5 @@ timm @ git+https://github.com/rwightman/pytorch-image-models@18ec173f95aa220af75
 torch==1.12.1
 torchvision==0.13.1
 tqdm==4.64.1
+pandas==1.5.2
+

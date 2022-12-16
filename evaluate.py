@@ -13,6 +13,10 @@ import random
 
 from torchvision.transforms import Resize
 
+import pandas as pd
+
+import os
+
 # Try to import lovely_tensors
 try:
     import lovely_tensors as lt
@@ -62,6 +66,8 @@ def main(cfg: DictConfig):
 
     assert len(dataset) == len(saliency_maps), "The saliency maps and the dataset don't have the same number of items"
 
+    metric_scores = []
+
     # Loop over the dataset to generate the saliency maps
     for (image, class_idx), saliency_map in tqdm(zip(dataset, saliency_maps),
                                                  desc="Computing saliency maps",
@@ -72,7 +78,23 @@ def main(cfg: DictConfig):
         if saliency_map.shape != image.shape:
             saliency_map = upsampling_fn(saliency_map)
 
-        metric(image, saliency_map, class_idx=class_idx)
+        score = metric(image, saliency_map, class_idx=class_idx)
+        metric_scores.append(score)
+
+    metric_scores = torch.stack(metric_scores).cpu().numpy()
+
+    # Save as a csv
+    csv_name = os.path.split(cfg.input_npz)[1].split(".npz")[0] + "_" + cfg.metric.name + ".csv"
+    csv_path = os.path.join(cfg.output_csv_dir, csv_name)
+    # Create dir if not exist
+    os.makedirs(cfg.output_csv_dir, exist_ok=True)
+
+    while os.path.exists(csv_path):
+        print("WARNING: csv file already exists:", csv_path)
+        csv_path += ".new"
+
+    print("\nSaving saliency maps to file:", csv_path)
+    pd.DataFrame(metric_scores).to_csv(csv_path)
 
 
 if __name__ == "__main__":

@@ -9,4 +9,5 @@ defaults:
 
 seed: 12345
 input_npz: npz/${model.name}_${method.name}.npz
+output_csv_dir: csv/
 metric_batch_size: 8
