@@ -1,0 +1,5 @@
+# @package _global_
+
+model:
+  init:
+    _target_: comparison_methods.chefer2_wrapper.vit_base_patch16_224

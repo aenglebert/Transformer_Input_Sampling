@@ -1,15 +1,19 @@
 import torch
 
+import numpy as np
+
+import copy
+
 import sys
 
 sys.path.append("comparison_methods/chefer1")
 
-from baselines.ViT.ViT_LRP import VisionTransformer, _conv_filter, _cfg
+from baselines.ViT.ViT_new import VisionTransformer, _conv_filter, _cfg
 from baselines.ViT.helpers import load_pretrained
-from baselines.ViT.ViT_explanation_generator import LRP
 
 from timm.models.vision_transformer import default_cfgs as vit_cfgs
 from timm.models.deit import default_cfgs as deit_cfgs
+
 
 
 """
@@ -61,12 +65,60 @@ def deit_base_patch16_224(pretrained=False, model_name="deit_base_patch16_224", 
         model.load_state_dict(checkpoint["model"])
     return model
 
-# Method computation
+
+"""
+Method computation
+
+The functions for Chefer2 method applied to ViT are defined in a notebook at
+https://github.com/hila-chefer/Transformer-MM-Explainability/blob/main/Transformer_MM_explainability_ViT.ipynb
+
+We have copied them here for lack of being able to import them
+"""
 
 
-class Chefer1Wrapper():
+# rule 5 from paper
+def avg_heads(cam, grad):
+    cam = cam.reshape(-1, cam.shape[-2], cam.shape[-1])
+    grad = grad.reshape(-1, grad.shape[-2], grad.shape[-1])
+    cam = grad * cam
+    cam = cam.clamp(min=0).mean(dim=0)
+    return cam
+
+
+# rule 6 from paper
+def apply_self_attention_rules(R_ss, cam_ss):
+    R_ss_addition = torch.matmul(cam_ss, R_ss)
+    return R_ss_addition
+
+
+def generate_relevance(model, input, index=None):
+    output = model(input, register_hook=True)
+    if index == None:
+        index = np.argmax(output.cpu().data.numpy(), axis=-1)
+
+    one_hot = np.zeros((1, output.size()[-1]), dtype=np.float32)
+    one_hot[0, index] = 1
+    one_hot_vector = one_hot
+    one_hot = torch.from_numpy(one_hot).requires_grad_(True)
+    one_hot = torch.sum(one_hot.cuda() * output)
+    model.zero_grad()
+    one_hot.backward(retain_graph=True)
+
+    num_tokens = model.blocks[0].attn.get_attention_map().shape[-1]
+    R = torch.eye(num_tokens, num_tokens).cuda()
+
+    for blk in model.blocks:
+        grad = blk.attn.get_attn_gradients()
+        cam = blk.attn.get_attention_map()
+        cam = avg_heads(cam, grad)
+        R += apply_self_attention_rules(R.cuda(), cam.cuda()).detach()
+
+    return R[0, 1:]
+
+
+class Chefer2Wrapper():
     """
-    Wrapper for Chefer1 method: Wrap the method to allow similar usage in scripts
+    Wrapper for Chefer2 method: Wrap the method to allow similar usage in scripts
     """
     def __init__(self, model):
         """
@@ -77,7 +129,6 @@ class Chefer1Wrapper():
         assert isinstance(model, VisionTransformer), "Transformer architecture not recognised"
 
         self.model = model
-        self.lrp = LRP(model)
 
     def __call__(self, x, class_idx=None):
         """
@@ -86,6 +137,11 @@ class Chefer1Wrapper():
         :param class_idx: index of the class to explain
         :return: a saliency map in shape (input_size, input_size)
         """
-        saliency_map = self.lrp.generate_LRP(x,  method="transformer_attribution", index=class_idx).detach()
-        return saliency_map.reshape(14, 14)
 
+        saliency_map = generate_relevance(self.model, x, index=class_idx)
+
+        for block in self.model.blocks:
+            block.attn.attn_gradients = None
+            block.attn.attention_maps = None
+
+        return saliency_map.reshape(14, 14)
