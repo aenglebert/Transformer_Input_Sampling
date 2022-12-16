@@ -21,6 +21,16 @@ echo -e "\e[1;32m[-] Cloning RISE\e[0m"
 git clone https://github.com/eclique/RISE RISE 
 cd RISE
 git -c advice.detachedHead=false checkout d91ea006d4bb9b7990347fe97086bdc0f5c1fe10
+cd ..
+echo ""
+
+
+# Clone Chefer methods
+echo -e "\e[1;32m[-] Cloning Chefer's methods\e[0m"
+git clone https://github.com/hila-chefer/Transformer-Explainability chefer1
+cd chefer1
+git -c advice.detachedHead=false checkout 72ba6816b90c6c595eac6cb2be09e6cfe2218a7b
+cd ..
 echo ""
 
 echo -e "\e[1;32m[-] Done"
