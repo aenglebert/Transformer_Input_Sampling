@@ -87,5 +87,5 @@ class Chefer1Wrapper():
         :return: a saliency map in shape (input_size, input_size)
         """
         saliency_map = self.lrp.generate_LRP(x,  method="transformer_attribution", index=class_idx).detach()
-        return saliency_map
+        return saliency_map.reshape(14, 14)
 
