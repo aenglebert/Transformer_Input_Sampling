@@ -52,7 +52,6 @@ def main(cfg: DictConfig):
 
     # Loop over the dataset to generate the saliency maps
     for image, class_idx in tqdm(dataset, desc="Computing saliency maps"):
-        print(image)
         image = image.unsqueeze(0).cuda()
 
         # Compute current saliency map
