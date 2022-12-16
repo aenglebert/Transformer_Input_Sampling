@@ -43,9 +43,6 @@ def main(cfg: DictConfig):
     print("Initializing saliency method:", cfg.method.name, end="\n\n")
     method = instantiate(cfg.method.init, model)
 
-    # Get transform
-    transform = instantiate(cfg.transform)
-
     # Get dataset
     print("Loading dataset", end="\n\n")
     dataset = instantiate(cfg.dataset)
@@ -55,6 +52,7 @@ def main(cfg: DictConfig):
 
     # Loop over the dataset to generate the saliency maps
     for image, class_idx in tqdm(dataset, desc="Computing saliency maps"):
+        print(image)
         image = image.unsqueeze(0).cuda()
 
         # Compute current saliency map
