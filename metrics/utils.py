@@ -48,8 +48,7 @@ class RelevanceMetric:
         :param image: Image for which to compute the metric
         :param saliency_map: Saliency map related to the image
         :param class_idx: Class of the saliency metric
-        :return: tuple of (auc, scores), auc being the area under the curve of the metric, and scores being
-                 the detailed scores for every steps
+        :return: detailed scores for every steps
         """
         assert image.shape[-2:] == saliency_map.shape[-2:], "Image and saliency map should have the same resolution"
 
@@ -87,11 +86,8 @@ class RelevanceMetric:
             # Add the result for class_idx for the current batch
             scores[selection_slice] = res[:, class_idx].detach()
 
-        # area under the curve
-        auc = torch.sum(scores) / self.n_steps
-
         # Return auc with detailed scores
-        return auc, scores
+        return scores
 
     def generate_samples(self, *args, **kwargs):
         """
