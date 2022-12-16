@@ -12,7 +12,12 @@ from timm.models.vision_transformer import default_cfgs as vit_cfgs
 from timm.models.deit import default_cfgs as deit_cfgs
 
 
-# Models
+"""
+Models: The Chefer method use modified models.
+We changed the model creation functions to use timm weights as defined in the hydra configuration
+instead of fixed weights defined by the authors
+"""
+
 
 def vit_base_patch16_224(pretrained=False, model_name="vit_base_patch16_224", pretrained_cfg=None, **kwargs):
     model = VisionTransformer(
@@ -58,8 +63,16 @@ def deit_base_patch16_224(pretrained=False, model_name="deit_base_patch16_224", 
 
 # Method computation
 
+
 class Chefer1Wrapper():
+    """
+    Wrapper for Chefer1 method: Wrap the method to allow similar usage in scripts
+    """
     def __init__(self, model):
+        """
+        initialisation of the class
+        :param model: model used for the maps computations
+        """
         # Check that model is a patched ViT
         assert isinstance(model, VisionTransformer), "Transformer architecture not recognised"
 
@@ -67,6 +80,12 @@ class Chefer1Wrapper():
         self.lrp = LRP(model)
 
     def __call__(self, x, class_idx=None):
+        """
+        Call the saliency method
+        :param x: input image tensor
+        :param class_idx: index of the class to explain
+        :return: a saliency map in shape (input_size, input_size)
+        """
         saliency_map = self.lrp.generate_LRP(x,  method="transformer_attribution", index=class_idx).detach()
         return saliency_map
 
