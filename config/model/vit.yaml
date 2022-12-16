@@ -3,4 +3,4 @@ init:
   _target_: timm.models.factory.create_model
   model_name: vit_base_patch16_224
   pretrained: true
-  pretrained_cfg: vit_base_patch16_224.orig_in21k_ft_in1k
+  pretrained_cfg: orig_in21k_ft_in1k

@@ -1,7 +1,7 @@
 fast-pytorch-kmeans==0.1.6
 hydra-core==1.3.0
 omegaconf==2.3.0
-timm==0.6.12
+timm @ git+https://github.com/rwightman/pytorch-image-models@18ec173f95aa220af753358bf860b16b6691edb2
 torch==1.12.1
 torchvision==0.13.1
 tqdm==4.64.1
