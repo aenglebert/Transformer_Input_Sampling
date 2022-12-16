@@ -1,0 +1,7 @@
+name: deletion_${metric.init.baseline}
+npz_only: true
+init:
+  _target_: metrics.Deletion
+  n_steps: 224
+  batch_size: ${metric_batch_size}
+  baseline: blur

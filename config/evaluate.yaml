@@ -1,0 +1,12 @@
+defaults:
+  - metric: insertion
+  - model: vit
+  - method: tis
+  - dataset: ilsvrc2012_subset
+  - transform: ilsvrc2012
+  - optional method_model: ${method}_${model}
+  - _self_
+
+seed: 12345
+input_npz: npz/${model.name}_${method.name}.npz
+metric_batch_size: 8
