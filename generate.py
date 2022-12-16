@@ -37,6 +37,7 @@ def main(cfg: DictConfig):
     # Get model
     print("Loading model:", cfg.model.name, end="\n\n")
     model = instantiate(cfg.model.init).cuda()
+    model.eval()
 
     # Get method
     print("Initializing saliency method:", cfg.method.name, end="\n\n")
