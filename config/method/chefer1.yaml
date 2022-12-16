@@ -1,0 +1,3 @@
+name: chefer1
+init:
+  _target_: comparison_methods.chefer1_wrapper.Chefer1Wrapper
