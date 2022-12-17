@@ -33,5 +33,17 @@ git -c advice.detachedHead=false checkout 72ba6816b90c6c595eac6cb2be09e6cfe2218a
 cd ..
 echo ""
 
+
+# Clone Rollout methods
+echo -e "\e[1;32m[-] Cloning Attention Rollout method\e[0m"
+git clone https://github.com/jacobgil/vit-explain vit_explain
+cd vit_explain
+git -c advice.detachedHead=false checkout 15a81d355a5aa6128ea4e71bbd56c28888d0f33b
+cd ..
+echo ""
+
+
+https://github.com/jacobgil/vit-explain
+
 echo -e "\e[1;32m[-] Done"
 

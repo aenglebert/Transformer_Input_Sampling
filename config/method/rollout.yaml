@@ -1,0 +1,5 @@
+name: rollout
+init:
+  _target_: comparison_methods.rollout_wrapper.RolloutWrapper
+  discard_ratio: 0.9
+  head_fusion: mean
