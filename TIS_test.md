@@ -64,7 +64,7 @@ dataset_display = ImageNet(imagenet_path, transform=transform_display, split="va
 
 ```python
 #vit_model = vit_b_16(weights='IMAGENET1K_V1').cuda()
-vit_model = timm.create_model("vit_base_patch16_224", pretrained=True, pretrained_cfg="vit_base_patch16_224.orig_in21k_ft_in1k").cuda()
+vit_model = timm.create_model("vit_base_patch16_224", pretrained=True, pretrained_cfg="orig_in21k_ft_in1k").cuda()
 #vit_model = timm.create_model("deit_base_patch16_224", pretrained=True).cuda()
 ```
 
