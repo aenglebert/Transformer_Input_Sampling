@@ -1,0 +1,5 @@
+name: tam
+init:
+  _target_: comparison_methods.tam_wrapper.TAMWrapper
+  start_layer: 0
+  steps: 20

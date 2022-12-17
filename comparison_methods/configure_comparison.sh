@@ -43,7 +43,14 @@ cd ..
 echo ""
 
 
-https://github.com/jacobgil/vit-explain
+# Clone TAM method
+echo -e "\e[1;32m[-] Cloning Transition Attention Maps method\e[0m"
+git clone https://github.com/XianrenYty/Transition_Attention_Maps
+cd Transition_Attention_Maps
+git -c advice.detachedHead=false checkout 8329327179f6dcf76df29e03ae519cd594595678
+cd ..
+echo ""
+
 
 echo -e "\e[1;32m[-] Done"
 
