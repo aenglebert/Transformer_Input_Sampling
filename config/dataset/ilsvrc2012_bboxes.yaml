@@ -1,0 +1,4 @@
+_target_: datasets.BboxesImageNet
+root: "./inputs/imagenet/"
+split: "val"
+transform: ${transform}
