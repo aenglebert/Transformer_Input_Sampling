@@ -26,5 +26,4 @@ class RolloutWrapper():
         :return: a saliency map in shape (input_size, input_size)
         """
         saliency_map = torch.tensor(self.method(x))
-        print(saliency_map)
         return saliency_map
