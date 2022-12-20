@@ -69,7 +69,7 @@ def main(cfg: DictConfig):
     metric_scores = []
 
     # Loop over the dataset to generate the saliency maps
-    for (image, class_idx), saliency_map in tqdm(zip(dataset, saliency_maps),
+    for (image, target), saliency_map in tqdm(zip(dataset, saliency_maps),
                                                  desc="Computing saliency maps",
                                                  total=len(dataset)):
         image = image.unsqueeze(0).cuda()
@@ -78,7 +78,7 @@ def main(cfg: DictConfig):
         if saliency_map.shape != image.shape:
             saliency_map = upsampling_fn(saliency_map)
 
-        score = metric(image, saliency_map, class_idx=class_idx)
+        score = metric(image, saliency_map, target=target)
         metric_scores.append(score)
 
     metric_scores = torch.stack(metric_scores).cpu().numpy()

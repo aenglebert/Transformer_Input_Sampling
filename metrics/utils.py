@@ -42,17 +42,17 @@ class RelevanceMetric:
         self.baseline_fn = baseline_fn_dict[baseline]
         self.softmax = softmax
 
-    def __call__(self, image, saliency_map, class_idx=None):
+    def __call__(self, image, saliency_map, target=None):
         """
         Metric computation
         :param image: Image for which to compute the metric
         :param saliency_map: Saliency map related to the image
-        :param class_idx: Class of the saliency metric
+        :param target: Class of the saliency metric
         :return: detailed scores for every steps
         """
         assert image.shape[-2:] == saliency_map.shape[-2:], "Image and saliency map should have the same resolution"
 
-        assert class_idx is not None, "Class should be specified for the metric"
+        assert isinstance(target, int), "Target class should be specified for the metric"
 
         # Get image resolution
         h, w = image.shape[-2:]
@@ -84,7 +84,7 @@ class RelevanceMetric:
                 res = torch.softmax(res, dim=1)
 
             # Add the result for class_idx for the current batch
-            scores[selection_slice] = res[:, class_idx].detach()
+            scores[selection_slice] = res[:, target].detach()
 
         # Return auc with detailed scores
         return scores
