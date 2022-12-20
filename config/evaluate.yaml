@@ -5,6 +5,7 @@ defaults:
   - dataset: ilsvrc2012_subset
   - transform: ilsvrc2012_albumentations
   - optional method_model: ${method}_${model}
+  - optional metric_dataset: ${metric}_${dataset}
   - _self_
 
 seed: 12345
