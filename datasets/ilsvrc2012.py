@@ -12,7 +12,7 @@ class AlbumentationsImageNet(ImageNet):
         if isinstance(transform, BasicTransform) or isinstance(transform, BaseCompose):
             def transform_fn(image):
                 np_image = np.array(image)
-                return transform(image=np_image)['image']
+                return transform(image=np_image, bboxes=[])['image']
 
         else:
             transform_fn = transform

@@ -3,7 +3,7 @@ defaults:
   - model: vit
   - method: tis
   - dataset: ilsvrc2012_subset
-  - transform: ilsvrc2012
+  - transform: ilsvrc2012_albumentations
   - optional method_model: ${method}_${model}
   - _self_
 
