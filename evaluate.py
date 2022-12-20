@@ -94,7 +94,7 @@ def main(cfg: DictConfig):
         csv_path += ".new"
 
     print("\nSaving saliency maps to file:", csv_path)
-    pd.DataFrame(metric_scores).to_csv(csv_path)
+    pd.DataFrame(metric_scores).to_csv(csv_path, header=False, index=False)
 
 
 if __name__ == "__main__":
