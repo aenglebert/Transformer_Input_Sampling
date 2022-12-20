@@ -70,7 +70,7 @@ def main(cfg: DictConfig):
 
     # Loop over the dataset to generate the saliency maps
     for (image, target), saliency_map in tqdm(zip(dataset, saliency_maps),
-                                                 desc="Computing saliency maps",
+                                                 desc="Computing metric",
                                                  total=len(dataset)):
         image = image.unsqueeze(0).cuda()
         saliency_map = saliency_map.reshape((1, 1, *saliency_map.shape))
