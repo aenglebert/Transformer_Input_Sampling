@@ -24,10 +24,32 @@ def random_baseline(input_image):
     return baseline
 
 
+def mean_baseline(input_image):
+    """
+    Mean baseline for perturbation metrics
+    :param input_image: image used in the metric
+    :return: mean map with the shape of the image
+    """
+    baseline = torch.ones_like(input_image) * input_image.mean()
+    return baseline
+
+
+def black_baseline(input_image):
+    """
+    Black baseline for perturbation metrics
+    :param input_image: image used in the metric
+    :return: black map with the shape of the image
+    """
+    baseline = torch.zeros_like(input_image)
+    return baseline
+
+
 # Dictionary of baseline generation functions
 baseline_fn_dict = {
     "blur": blur_baseline,
     "random": random_baseline,
+    "mean": mean_baseline,
+    "black": black_baseline,
 }
 
 
