@@ -5,5 +5,5 @@ init:
   method_cfg_list:
     - _target_: captum.attr.IntegratedGradients
   method_attrs:
-    internal_batch_size: 8
+    internal_batch_size: 64
     n_steps: 50
