@@ -7,4 +7,4 @@ init:
     - _target_: captum.attr.NoiseTunnel
   method_attrs:
     nt_type: smoothgrad
-    nt_samples: 10
+    nt_samples: 50
