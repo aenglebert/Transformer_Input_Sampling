@@ -1,0 +1,10 @@
+name: smoothgrad
+init:
+  _target_: comparison_methods.captum_wrapper.CaptumWrapper
+  _recursive_: false
+  method_cfg_list:
+    - _target_: captum.attr.Saliency
+    - _target_: captum.attr.NoiseTunnel
+  method_attrs:
+    nt_type: smoothgrad
+    nt_samples: 10

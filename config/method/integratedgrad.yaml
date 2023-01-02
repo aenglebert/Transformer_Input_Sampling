@@ -1,0 +1,9 @@
+name: integratedgrad
+init:
+  _target_: comparison_methods.captum_wrapper.CaptumWrapper
+  _recursive_: false
+  method_cfg_list:
+    - _target_: captum.attr.IntegratedGradients
+  method_attrs:
+    internal_batch_size: 8
+    n_steps: 50
