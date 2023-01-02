@@ -1,3 +1,4 @@
 scikit-image==0.19.3
 einops==0.6.0
 opencv-python==4.6.0.66
+captum==0.6.0
