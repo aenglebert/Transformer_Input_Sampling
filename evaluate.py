@@ -96,7 +96,7 @@ def main(cfg: DictConfig):
     metric_scores = torch.stack(metric_scores).cpu().numpy()
 
     # Save as a csv
-    csv_name = os.path.split(cfg.input_npz)[1].split(".npz")[0] + "_" + cfg.metric.name + ".csv"
+    csv_name = os.path.split(cfg.input_npz)[1].split(".npz")[0] + "_" + cfg.metric.name + "_" + cfg.dataset.name + ".csv"
     csv_path = os.path.join(cfg.output_csv_dir, csv_name)
     # Create dir if not exist
     os.makedirs(cfg.output_csv_dir, exist_ok=True)
