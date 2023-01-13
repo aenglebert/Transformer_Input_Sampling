@@ -6,4 +6,3 @@ dataset:
   root: "./inputs/imagenet/"
   split: "val"
   transform: ${transform}
-name: ILSVRC2012_sub5000

@@ -2,4 +2,3 @@ _target_: datasets.AlbumentationsImageNet
 root: "./inputs/imagenet/"
 split: "val"
 transform: ${transform}
-name: ILSVRC2012
