@@ -45,40 +45,52 @@ def main(cfg: DictConfig):
     model = instantiate(cfg.model.init).cuda()
     model.eval()
 
-    if not cfg.metric.npz_only:
-        # Get method
-        print("Initializing saliency method:", cfg.method.name, end="\n\n")
-        method = instantiate(cfg.method.init, model)
-
-    # Get saliencies from npz
-    print("Loading saliency maps from", cfg.input_npz, end="\n\n")
-    saliency_maps = torch.tensor(np.load(cfg.input_npz)['arr_0'])
-
     # Get dataset
     print("Loading dataset", end="\n\n")
     dataset = instantiate(cfg.dataset)
 
-    # Get metric
-    metric = instantiate(cfg.metric.init, model)
+    if cfg.metric.npz_only:
+        # Get saliencies from npz
+        print("Loading saliency maps from", cfg.input_npz, end="\n\n")
+        saliency_maps = torch.tensor(np.load(cfg.input_npz)['arr_0'])
 
-    # Set resize transformation for the saliency maps if upsampling is required
-    upsampling_fn = Resize(dataset[0][0].shape[-2:])
+        # Get metric
+        metric = instantiate(cfg.metric.init, model)
 
-    assert len(dataset) == len(saliency_maps), "The saliency maps and the dataset don't have the same number of items"
+        # Set resize transformation for the saliency maps if upsampling is required
+        upsampling_fn = Resize(dataset[0][0].shape[-2:])
+
+        assert len(dataset) == len(
+            saliency_maps), "The saliency maps and the dataset don't have the same number of items"
+
+    else:
+        # Get method
+        print("Initializing saliency method:", cfg.method.name, end="\n\n")
+        method = instantiate(cfg.method.init, model)
+
+        # Get metric
+        metric = instantiate(cfg.metric.init, model, method)
 
     metric_scores = []
 
     # Loop over the dataset to generate the saliency maps
-    for (image, target), saliency_map in tqdm(zip(dataset, saliency_maps),
-                                                 desc="Computing metric",
-                                                 total=len(dataset)):
+    for idx in tqdm(range(len(dataset)),
+                    desc="Computing metric",
+                    total=len(dataset)):
+        (image, target) = dataset[idx]
         image = image.unsqueeze(0).cuda()
-        saliency_map = saliency_map.reshape((1, 1, *saliency_map.shape))
 
-        if saliency_map.shape != image.shape:
-            saliency_map = upsampling_fn(saliency_map)
+        if cfg.metric.npz_only:
+            saliency_map= saliency_maps[idx]
+            saliency_map = saliency_map.reshape((1, 1, *saliency_map.shape))
+            if saliency_map.shape != image.shape:
+                saliency_map = upsampling_fn(saliency_map)
 
-        score = metric(image, saliency_map, target=target)
+            score = metric(image, saliency_map, target=target)
+
+        else:
+            score = metric(image, target=target)
+
         metric_scores.append(score)
 
     metric_scores = torch.stack(metric_scores).cpu().numpy()

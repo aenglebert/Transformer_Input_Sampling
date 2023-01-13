@@ -1,0 +1,6 @@
+name: sensitivity_max
+npz_only: false
+init:
+  _target_: metrics.SensitivityMax
+  n_perturb_samples: 10
+  perturb_radius: 0.02
