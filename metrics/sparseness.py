@@ -6,23 +6,31 @@
 
 import torch 
 
+
 class Sparseness:
-    def __init__(self, shift=False):
+    def __init__(self, *args, shift=False):
         """
         Init of Sparseness metric class
+        :param *args: for compatibility purpose
         :param shift: optional parameter to shift the minimum value of the 
         saliency map to zero.
         """
         self.shift = shift
         
-    def __call__(self, saliency_map):
-        
-        if self.shift==True:
+    def __call__(self, image, saliency_map, **kwargs):
+        """
+        Sparseness metric computation
+        :param image: Not used, kept for compatibility with other metrics classes
+        :param saliency_map: saliency map to compute the metric
+        :param **kwargs: for compatibility purpose
+        :return: sparseness metric
+        """
+        if self.shift:
             # Set the minimum value of the saliency map to 0 
             saliency_map = saliency_map - saliency_map.amin()
             
         # Only positive non-zero values should be used.
-        assert(saliency_map>=0).all() == True, """
+        assert(saliency_map >= 0).all(), """
         Non-positive values are not accepted for the Sparseness Metric (Gini Coefficient).
         One solution can be to shift the minimum value to zero 
         using self.shift=True
@@ -35,7 +43,6 @@ class Sparseness:
         flat_saliency = torch.add(flat_saliency, 0.0000001)
         # Length of the flattened tensor
         length = flat_saliency.size()[0]
-        
         
         # Sort the tensor in ascending order
         sorted_saliency = torch.sort(flat_saliency)
