@@ -29,7 +29,7 @@ from tis import TIS
 ```
 
 ```python
-imagenet_path = "./datasets/imagenet/"
+imagenet_path = "./inputs/imagenet/"
 ```
 
 ```python
