@@ -55,7 +55,7 @@ class TIS:
 
         # Unsqueeze to get 4 dimensions if needed
         if x.dim() == 3:
-            x = x.unsqueeze()
+            x = x.unsqueeze(dim=0)
 
         with torch.no_grad():
             # First forward pass to recorde encoder activations
