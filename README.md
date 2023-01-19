@@ -17,7 +17,7 @@ By default, the imagenet path is "inputs/imagenet/", it can be changed in the hy
 
 ## Usage
 
-Exemple of usage ("tis_example.py" file)
+Example of usage of the TiS method (``` tis_example.py ```  file).
 
 ``` 
 from torchvision import transforms
