@@ -56,10 +56,10 @@ def main(cfg: DictConfig):
     # Get image
     print("Opening image:", cfg.input_file, end="\n\n")
     image_raw = Image.open(cfg.input_file).convert('RGB')
-    image = transform(image_raw).to(device)
+    image = transform(image_raw).to(device).unsqueeze(0)
 
     if not cfg.class_idx:
-        class_idx = torch.argmax(model(image.unsqueeze(0)), dim=-1)[-1]
+        class_idx = torch.argmax(model(image), dim=-1)[-1]
     else:
         class_idx = cfg.class_idx
 
