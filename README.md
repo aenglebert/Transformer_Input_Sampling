@@ -17,9 +17,11 @@ By default, the imagenet path is "inputs/imagenet/", it can be changed in the hy
 
 ## Usage
 
-Exemple of usage
+Exemple of usage ("tis_example.py" file)
 
 ``` 
+from torchvision import transforms
+
 # Load a ViT model
 import timm
 model = timm.create_model("vit_base_patch16_224", pretrained=True).cuda()
@@ -34,13 +36,15 @@ transform = transforms.Compose([transforms.ToTensor(),
 
 # Get image 
 from PIL import Image 
-image = Image.open(path/to/image.png).convert('RGB') 
-input_tensor = transform(image)
+image = Image.open("dog.png").convert('RGB') 
+input_tensor = transform(image).cuda()
 
 # Initialize the saliency class (adapt the batch_size depending on the available memory)
 from tis import TIS
-saliency_method = tis(model, batch_size=512)
+saliency_method = TIS(model, batch_size=512)
 
 # class_idx can be omited, in this case the maximum predicted class will be used
-saliency_map = tis(image, class_idx=class_idx).cpu()
+saliency_map = saliency_method(input_tensor, 
+                   #class_idx=class_idx
+                  ).cpu()
 ``` 
