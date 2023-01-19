@@ -16,8 +16,30 @@ The requirements specifics to comparison methods can be installed using requirem
 By default, the imagenet path is "inputs/imagenet/", it can be changed in the hydra dataset config.
 
 ## Usage
+The method is provided ready to use as a script, a notebook, or can be used in any script as a library.
+You need to install the dependencies listed in Section Requirements.
 
-Example of usage of the TiS method (``` tis_example.py ```  file).
+### Demonstration script
+It can be used on an arbitrary image with the following command line:
+```python tis_example.py input_file=image.jpg```, by replacing image.jpg with your image.
+If not specified with the class_idx argument, the class used for the explanation is the maximum output of the model.
+
+This script use hydra, so any parameter in the configuration files (in config folder) can be changed in the command line.
+Here is an example with a batch size of 16, using a DeiT model and generating an explanation for German shepherd (235).
+```python tis_example.py input_file=image.jpg method.init.batch_size=32 model=deit class_idx=235```
+
+Additionally, this script is compatible with the compared methods (see Requirements for comparison Section), 
+for example using RISE:
+```python tis_example.py input_file=image.jpg method=RISE```
+
+### Notebook
+A jupyter notebook is provided as ```TIS_test.ipynb``` and provide the opportunity to play in live with the method.
+It requires the Imagenet validation set by default, but can be easily adapted to an arbitrary image.
+
+
+### Import in any script
+The method can be used in any project as a library by importing this repository from your project.
+Here is an example displaying a typical usage.
 
 ``` 
 from torchvision import transforms
