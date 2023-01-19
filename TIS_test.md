@@ -69,7 +69,7 @@ vit_model = timm.create_model("vit_base_patch16_224", pretrained=True, pretraine
 ```
 
 ```python
-tis = TIS(vit_model, n_masks=2048, batch_size=512)
+tis = TIS(vit_model, n_masks=1024, batch_size=128)
 ```
 
 ```python

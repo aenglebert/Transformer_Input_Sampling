@@ -10,7 +10,7 @@ import math
 
 
 class TIS:
-    def __init__(self, model, n_masks=2048, batch_size=2, tokens_ratio=0.25, normalise=True, verbose=True):
+    def __init__(self, model, n_masks=1024, batch_size=128, tokens_ratio=0.5, normalise=True, verbose=True):
         """
         Create a TIS class to compute saliency maps for a vision transformer
         :param model: The ViT model to explain
