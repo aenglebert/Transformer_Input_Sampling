@@ -69,7 +69,7 @@ def main(cfg: DictConfig):
 
     image = image - image.min()
     image = image/image.max()
-    overlay(image.cpu(), saliency_map)
+    overlay(image.squeeze(0).cpu(), saliency_map)
 
 
 if __name__ == "__main__":
