@@ -22,7 +22,7 @@ def seed_everything(seed):
     torch.cuda.manual_seed_all(seed)
 
 
-def overlay(image, saliency, alpha=0.7):
+def overlay(image, saliency, alpha=0.7, output_file=None):
     fig, ax = plt.subplots(1, 2, figsize=(10, 6))
     image = image.permute(1, 2, 0)
     saliency = interpolate(saliency.reshape((1, 1, *saliency.shape)), size=image.shape[:2], mode='bilinear')
@@ -30,7 +30,10 @@ def overlay(image, saliency, alpha=0.7):
     ax[0].imshow(image)
     ax[1].imshow(image)
     ax[1].imshow(saliency, alpha=alpha, cmap='jet')
-    plt.show()
+    if output_file:
+        plt.savefig(output_file)
+    else:
+        plt.show()
 
 
 @hydra.main(version_base="1.3", config_path="config", config_name="example")
@@ -69,7 +72,7 @@ def main(cfg: DictConfig):
 
     image = image - image.min()
     image = image/image.max()
-    overlay(image.squeeze(0).cpu(), saliency_map)
+    overlay(image.squeeze(0).cpu(), saliency_map, output_file=cfg.output_file)
 
 
 if __name__ == "__main__":

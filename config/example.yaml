@@ -7,4 +7,5 @@ defaults:
 
 seed: 12345
 input_file: input.jpg
+output_file: null
 class_idx: null
