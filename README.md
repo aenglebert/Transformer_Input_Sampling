@@ -24,6 +24,11 @@ It can be used on an arbitrary image with the following command line:
 
 ```python tis_example.py input_file=image.jpg```, by replacing 'image.jpg' with your image.
 
+By default, the result of the image and on overlay of the map is displayed.
+Instead of displaying the result, you can save it in a file by using and 'output_file argument as so:
+
+```python tis_example.py input_file=image.jpg output_file=output.png```
+
 If not specified with a class_idx argument, the class used is the maximum output of the model.
 
 This script use hydra, so any parameter from the configuration files (in config folder) can be changed in the command line.
