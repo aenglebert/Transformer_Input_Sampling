@@ -67,10 +67,14 @@ class TIS:
                 print("class idx", class_idx)
 
             # Generate the masks
-            mask_list, mask_indices_list = self.generate_masks(encoder_activations)
+            raw_masks = self.generate_raw_masks(encoder_activations)
+            mask_list, mask_indices_list = self.generate_binary_masks(raw_masks)
 
             # Generate the saliency map for image x and class_idx
-            saliency_map = self.generate_saliency(x, class_idx, mask_list, mask_indices_list)
+            scores = self.generate_scores(x, class_idx, mask_indices_list)
+
+            print(scores)
+            saliency_map = self.generate_saliency(x, scores, mask_list)
 
             return saliency_map
 
@@ -114,23 +118,17 @@ class TIS:
 
         return predicted_class, self.encoder_activations
 
-    def generate_masks(self, encoder_activations):
+    def generate_raw_masks(self, encoder_activations):
         """
         Generate the masks based on the activations
         :param encoder_activations: tensor of activations
-        :return: tuple (mask_list, mask_indices_list)
-        mask_list is a list of masks (list of tensors)
-        mask_indices_list is a list of indices for each mask (list of tensors)
+        :return: list of raw masks (list of tensors)
         """
         # Squeeze to shape (n_tokens+1, n_activations)
         encoder_activations = encoder_activations.squeeze(0)
 
         # remove CLS token and transpose, shape (n_activations, n_tokens)
         encoder_activations = encoder_activations[1:].T
-
-        # Initialise lists for the masks
-        mask_indices_list = []
-        mask_list = []
 
         # Create clusters with kmeans
         kmeans = KMeans(n_clusters=self.n_masks, mode='euclidean', verbose=self.verbose)
@@ -139,9 +137,23 @@ class TIS:
         # Use kmeans centroids as basis for masks
         raw_masks = kmeans.centroids
 
-        # Convert raw masks to binary masks
-        for raw_mask in raw_masks:
-            for ratio in self.tokens_ratio:
+        return raw_masks
+
+    def generate_binary_masks(self, raw_masks):
+        """
+        Generate binary masks based on the raw masks
+        :param raw_masks: list of raw masks
+        :return: tuple (mask_list, mask_indices_list)
+        mask_list is a list of masks (list of tensors)
+        mask_indices_list is a list of indices for each mask (list of tensors)
+        """
+
+        # Initialise lists for the masks
+        mask_indices_list = []
+        mask_list = []
+
+        for ratio in self.tokens_ratio:
+            for raw_mask in raw_masks:
                 # Computer the number of tokens to keep based on the ratio
                 n_tokens = int(ratio * raw_mask.flatten().shape[0])
 
@@ -158,14 +170,14 @@ class TIS:
 
         return mask_list, mask_indices_list
 
-    def generate_saliency(self, x, class_idx, mask_list, mask_indices_list):
+    def generate_scores(self, x, class_idx, mask_indices_list):
         """
-        Generate the saliency map
+        Generate the masks scores
         :param x: Image to produce the saliency map
         :param class_idx: Class to explore for the saliency map
         :param mask_list: List of masks (list of tensors)
         :param mask_indices_list: List of masks indices (list of tensors)
-        :return: Saliency map
+        :return: Score tensor
         """
         # initialise the list of scores of the masks
         scores = []
@@ -232,6 +244,10 @@ class TIS:
 
         # Concatenate all the scores into a tensor
         scores = torch.cat(scores)
+
+        return scores
+
+    def generate_saliency(self, x, scores, mask_list):
 
         # Stack masks into a tensor
         masks = torch.vstack(mask_list).T
