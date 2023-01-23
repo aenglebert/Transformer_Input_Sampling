@@ -1,9 +1,9 @@
-# Transformer Input Sampling
+# Transformer Input Sampling (TiS)
 
 ## Introduction
-This repository contain the source code for Transformer Input Sampling method.
-The method produce saliency maps for vision transformers using token masking.
-The activations of the network being used to produce binary masks for the tokens.
+This repository contains the source code for Transformer Input Sampling (TiS) method.
+The method produces saliency maps for vision transformers using token masking.
+The activations of the network are used to produce binary masks for the tokens.
 
 ## Requirements
 A requirements.txt file is provided to install the necessary libraries to use this method.
@@ -11,8 +11,8 @@ A requirements.txt file is provided to install the necessary libraries to use th
 ## Requirements for comparison
 This repository also hold scripts to benchmark in comparison to other methods.
 
-A script is provided to configure the comparison methods repositories ( comparison_methods/configure.sh ).
-The requirements specifics to comparison methods can be installed using requirements_comparison.txt
+A script is provided to configure the comparison methods repositories ("comparison_methods/configure_comparison.sh").
+The requirements specific to comparison methods can be installed using requirements_comparison.txt
 By default, the imagenet path is "inputs/imagenet/", it can be changed in the hydra dataset config.
 
 ## Usage
@@ -31,7 +31,7 @@ Instead of displaying the result, you can save it in a file by using and 'output
 
 If not specified with a class_idx argument, the class used is the maximum output of the model.
 
-This script use hydra, so any parameter from the configuration files (in config folder) can be changed in the command line.
+This script uses hydra, so any parameter from the configuration files (in config folder) can be changed in the command line.
 Here is an example with a batch size of 16, using a DeiT model and generating an explanation for German shepherd (235).
 
 ```python tis_example.py input_file=image.jpg method.init.batch_size=32 model=deit class_idx=235```
@@ -42,12 +42,12 @@ for example using RISE:
 ```python tis_example.py input_file=image.jpg method=RISE```
 
 ### Notebook
-A jupyter notebook is provided as ```TIS_test.ipynb``` and provide the opportunity to play in live with the method.
+A jupyter notebook is provided as ```TIS_test.ipynb``` and offers the opportunity to play in live with the method.
 It requires the Imagenet validation set by default, but can be easily adapted to an arbitrary image.
 
 
 ### Import in any project
-The method can be used in any project as a library by importing this repository from your project.
+The method can be used as a library by importing this repository for your project.
 Here is an example displaying a typical usage.
 
 ``` 
