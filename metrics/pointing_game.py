@@ -22,8 +22,8 @@ class EnergyBasedPointingGame:
         if (bboxes_map.sum() / torch.ones((w, h)).sum()) < self.max_overlap:
             bboxes_saliency = saliency_map * bboxes_map
 
-            energy_bbox = bboxes_saliency.sum()
-            energy_total = saliency_map.sum()
+            energy_bbox = bboxes_saliency.abs().sum()
+            energy_total = saliency_map.abs().sum()
 
             return torch.tensor(energy_bbox / energy_total)
 
