@@ -51,6 +51,11 @@ def main(cfg: DictConfig):
 
     if cfg.metric.npz_only:
         # Get saliencies from npz
+
+        input_npz = cfg.input_npz
+        if cfg.no_target:
+            input_npz += ".notarget"
+
         print("Loading saliency maps from", cfg.input_npz, end="\n\n")
         saliency_maps = torch.tensor(np.load(cfg.input_npz)['arr_0'])
 
@@ -80,8 +85,11 @@ def main(cfg: DictConfig):
         (image, target) = dataset[idx]
         image = image.unsqueeze(0).cuda()
 
+        if cfg.no_target:
+            target = torch.argmax(model(image)).item()
+
         if cfg.metric.npz_only:
-            saliency_map= saliency_maps[idx]
+            saliency_map = saliency_maps[idx]
             saliency_map = saliency_map.reshape((1, 1, *saliency_map.shape))
             if saliency_map.shape != image.shape:
                 saliency_map = upsampling_fn(saliency_map)

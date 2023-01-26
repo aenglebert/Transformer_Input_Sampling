@@ -54,6 +54,9 @@ def main(cfg: DictConfig):
     for image, class_idx in tqdm(dataset, desc="Computing saliency maps"):
         image = image.unsqueeze(0).cuda()
 
+        if cfg.no_target:
+            class_idx = None
+
         # Compute current saliency map
         cur_map = method(image, class_idx=class_idx).detach().cpu()
 
@@ -64,6 +67,9 @@ def main(cfg: DictConfig):
     saliency_maps = torch.stack(saliency_maps_list)
 
     # Save as a npz
+    output_npz = cfg.output_npz
+    if cfg.no_target:
+        output_npz += ".notarget"
     print("\nSaving saliency maps to file:", cfg.output_npz)
     np.savez(cfg.output_npz, saliency_maps.cpu().numpy())
 

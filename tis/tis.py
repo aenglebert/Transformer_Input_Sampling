@@ -64,7 +64,8 @@ class TIS:
             # Define the class to explain. If not explicit, use the class predicted by the model
             if class_idx is None:
                 class_idx = predicted_class
-                print("class idx", class_idx)
+                if self.verbose:
+                    print("class idx", class_idx)
 
             # Generate the masks
             raw_masks = self.generate_raw_masks(encoder_activations)
@@ -73,7 +74,6 @@ class TIS:
             # Generate the saliency map for image x and class_idx
             scores = self.generate_scores(x, class_idx, mask_indices_list)
 
-            print(scores)
             saliency_map = self.generate_saliency(x, scores, mask_list)
 
             return saliency_map
