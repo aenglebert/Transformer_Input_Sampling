@@ -6,6 +6,7 @@ import torch
 from torch.nn.functional import interpolate
 import numpy as np
 import random
+import os
 
 from datasets.ilsvrc2012 import classes
 
@@ -31,6 +32,13 @@ def overlay(image, saliency, alpha=0.7, output_file=None):
     ax[1].imshow(image)
     ax[1].imshow(saliency, alpha=alpha, cmap='jet')
     if output_file:
+        # If 'output_file' path is absolute
+        if os.path.isabs(output_file):
+            print(f"Saving the output image under {output_file}")
+        # Else print the current working directory path + 'output_file'
+        else: 
+            print(f"Saving the output image under {os.getcwd()}/{output_file}")
+        # Save the explanation
         plt.savefig(output_file)
     else:
         plt.show()
