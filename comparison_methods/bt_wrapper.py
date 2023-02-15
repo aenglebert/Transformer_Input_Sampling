@@ -5,19 +5,13 @@ import sys
 sys.path.append("comparison_methods/transformerinterp/ViT")
 
 from baselines.ViT.ViT_new import VisionTransformer, _conv_filter, _cfg
-
-
-
-from comparison_methods.chefer1.baselines.ViT.helpers import load_pretrained
-
-
-
-
 from baselines.ViT.ViT_explanation_generator import Baselines as Exp
+
+# Use load_pretrained from chefer since we use an url, the bt modifications does not allow this
+from comparison_methods.chefer1.baselines.ViT.helpers import load_pretrained
 
 from timm.models.vision_transformer import default_cfgs as vit_cfgs
 from timm.models.deit import default_cfgs as deit_cfgs
-
 
 """
 Models: The BT method uses modified models.
