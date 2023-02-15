@@ -51,6 +51,14 @@ git -c advice.detachedHead=false checkout 8329327179f6dcf76df29e03ae519cd5945956
 cd ..
 echo ""
 
+# Clone BT method
+echo -e "\e[1;32m[-] Cloning method from 'Beyond Intuition: Rethinking Token Attributions inside Transformers'\e[0m"
+git clone https://github.com/jiaminchen-1031/transformerinterp
+cd transformerinterp
+git -c advice.detachedHead=false checkout f710ac8cac1f84e8e53c2f7fb3ec4782de26dfce
+cd ..
+echo ""
+
 
 echo -e "\e[1;32m[-] Done"
 

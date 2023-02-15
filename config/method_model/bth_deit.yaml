@@ -1,0 +1,5 @@
+# @package _global_
+
+model:
+  init:
+    _target_: comparison_methods.bt_wrapper.deit_base_patch16_224
