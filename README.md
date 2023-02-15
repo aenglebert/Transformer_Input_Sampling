@@ -39,7 +39,7 @@ Here is an example with a batch size of 16, using a DeiT model and generating an
 Additionally, this script is compatible with the compared methods (see the 'Requirements for comparison' Section), 
 for example using RISE:
 
-```python tis_example.py input_file=image.jpg method=RISE```
+```python tis_example.py input_file=image.jpg method=rise```
 
 ### Notebook
 A jupyter notebook is provided as ```TIS_test.ipynb``` and offers the opportunity to play in live with the method.
