@@ -86,6 +86,7 @@ class Chefer1Wrapper():
         :param class_idx: index of the class to explain
         :return: a saliency map in shape (input_size, input_size)
         """
-        saliency_map = self.lrp.generate_LRP(x,  method="transformer_attribution", index=class_idx).detach()
-        return saliency_map.reshape(14, 14)
+        with torch.enable_grad():
+            saliency_map = self.lrp.generate_LRP(x,  method="transformer_attribution", index=class_idx).detach()
+            return saliency_map.reshape(14, 14)
 

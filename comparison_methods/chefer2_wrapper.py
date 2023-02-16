@@ -137,11 +137,11 @@ class Chefer2Wrapper():
         :param class_idx: index of the class to explain
         :return: a saliency map in shape (input_size, input_size)
         """
+        with torch.enable_grad():
+            saliency_map = generate_relevance(self.model, x, index=class_idx)
 
-        saliency_map = generate_relevance(self.model, x, index=class_idx)
+            for block in self.model.blocks:
+                block.attn.attn_gradients = None
+                block.attn.attention_maps = None
 
-        for block in self.model.blocks:
-            block.attn.attn_gradients = None
-            block.attn.attention_maps = None
-
-        return saliency_map.reshape(14, 14)
+            return saliency_map.reshape(14, 14)
