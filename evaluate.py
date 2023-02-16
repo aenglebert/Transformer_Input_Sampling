@@ -78,10 +78,17 @@ def main(cfg: DictConfig):
 
     metric_scores = []
 
+    # Limit to a subset of the dataset if needed
+    start_idx = cfg.start_idx
+    if cfg.end_idx == -1:
+        end_idx = len(dataset)
+    else:
+        end_idx = cfg.end_idx
+
     # Loop over the dataset to generate the saliency maps
-    for idx in tqdm(range(len(dataset)),
+    for idx in tqdm(range(start_idx, end_idx+1),
                     desc="Computing metric",
-                    total=len(dataset)):
+                    total=(end_idx - start_idx)):
         (image, target) = dataset[idx]
         image = image.unsqueeze(0).cuda()
 
@@ -104,7 +111,10 @@ def main(cfg: DictConfig):
     metric_scores = torch.stack(metric_scores).cpu().numpy()
 
     # Save as a csv
-    csv_name = os.path.split(cfg.input_npz)[1].split(".npz")[0] + "_" + cfg.metric.name + ".csv"
+    csv_name = os.path.split(cfg.input_npz)[1].split(".npz")[0] + "_" + cfg.metric.name
+    if cfg.start_idx != 0 or cfg.end_idx != -1:
+        csv_name += "_subset" + str(start_idx) + "-" + str(end_idx)
+    csv_name += ".csv"
     csv_path = os.path.join(cfg.output_csv_dir, csv_name)
     # Create dir if not exist
     os.makedirs(cfg.output_csv_dir, exist_ok=True)
