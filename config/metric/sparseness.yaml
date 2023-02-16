@@ -2,4 +2,4 @@ name: sparseness
 npz_only: true
 init:
   _target_: metrics.Sparseness
-  shift: false
+  shift: true
