@@ -53,8 +53,6 @@ def main(cfg: DictConfig):
         # Get saliencies from npz
 
         input_npz = cfg.input_npz
-        if cfg.no_target:
-            input_npz += ".notarget"
 
         print("Loading saliency maps from", cfg.input_npz, end="\n\n")
         saliency_maps = torch.tensor(np.load(cfg.input_npz)['arr_0'])
