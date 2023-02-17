@@ -79,7 +79,7 @@ def main(cfg: DictConfig):
     # Limit to a subset of the dataset if needed
     start_idx = cfg.start_idx
     if cfg.end_idx == -1:
-        end_idx = len(dataset)
+        end_idx = len(dataset) - 1
     else:
         end_idx = cfg.end_idx
 
