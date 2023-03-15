@@ -12,7 +12,7 @@ A requirements.txt file is provided to install the necessary libraries to use th
 This repository also hold scripts to benchmark in comparison to other methods.
 
 A script is provided to configure the comparison methods repositories ("comparison_methods/configure_comparison.sh").
-The requirements specific to comparison methods can be installed using requirements_comparison.txt
+The requirements specific to comparison methods can be installed using requirements_comparison.txt.
 By default, the imagenet path is "inputs/imagenet/", it can be changed in the hydra dataset config.
 
 ## Usage
