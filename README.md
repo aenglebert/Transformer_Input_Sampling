@@ -13,7 +13,7 @@ This repository also hold scripts to benchmark in comparison to other methods.
 
 A script is provided to configure the comparison methods repositories ("comparison_methods/configure_comparison.sh").
 The requirements specific to comparison methods can be installed using requirements_comparison.txt.
-By default, the imagenet path is "inputs/imagenet/", it can be changed in the hydra dataset config.
+The ImageNet 2012 validation dataset can be downloaded on the official ImageNet website. After login, go to the downloads page (https://image-net.org/download-images.php) and after clicking on ILSVRC2012, download the 'Development kit (Task 1 & 2)' as well as the 'Validation images (all tasks)'. By default, both files should be placed under a folder "inputs/imagenet/", it can be changed in the hydra dataset config.
 
 ## Usage
 The method is provided ready to use as a script, a notebook, or can be used in any project as a library.
