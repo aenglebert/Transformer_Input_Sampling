@@ -11,6 +11,8 @@ from tqdm import tqdm
 
 import random
 
+import os
+
 # Try to import lovely_tensors
 try:
     import lovely_tensors as lt
@@ -27,6 +29,10 @@ def seed_everything(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
 
+def create_directory_if_not_exists(filepath):
+    directory = os.path.dirname(filepath)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 # Use Hydra to allow easy configuration swap for comparison of methods
 @hydra.main(version_base="1.3", config_path="config", config_name="generate")
@@ -71,6 +77,7 @@ def main(cfg: DictConfig):
     if cfg.no_target:
         output_npz += ".notarget"
     print("\nSaving saliency maps to file:", cfg.output_npz)
+    create_directory_if_not_exists(output_npz)
     np.savez(cfg.output_npz, saliency_maps.cpu().numpy())
 
 
