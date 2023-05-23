@@ -1,0 +1,6 @@
+name: vit_b8
+init:
+  _target_: timm.models.factory.create_model
+  model_name: vit_base_patch8_224
+  pretrained: true
+  pretrained_cfg: augreg_in21k
