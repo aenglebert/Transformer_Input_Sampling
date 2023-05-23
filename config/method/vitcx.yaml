@@ -1,0 +1,5 @@
+name: vitcx
+init:
+  _target_: comparison_methods.vitcx_wrapper.ViTCXWrapper
+  batch_size: 16
+

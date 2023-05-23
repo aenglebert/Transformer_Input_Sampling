@@ -60,5 +60,13 @@ cd ..
 echo ""
 
 
+# Clone ViT-CX
+echo -e "\e[1;32m[-] Cloning ViT-CX method\e[0m"
+git clone https://github.com/vaynexie/CausalX-ViT ViTCX
+cd ViTCX
+git -c advice.detachedHead=false checkout a120d99346d5d01788c221513879d1a6a5c70a39
+cd ..
+echo ""
+
 echo -e "\e[1;32m[-] Done"
 
