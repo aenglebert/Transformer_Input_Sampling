@@ -1,6 +1,8 @@
 # Wrappers classes for comparison in benchmarks
 import torch
 import sys
+import copy
+
 
 sys.path.append("comparison_methods/ViTCX/ViT_CX")
 
@@ -14,20 +16,13 @@ class ViTCXWrapper:
     """
     Wrapper for ViT-CX: Wrap ViT-CX method to allow similar usage in scripts
     """
-    def __init__(self, model, batch_size=2, target_layer=None, **kwargs):
+    def __init__(self, model, batch_size=2, **kwargs):
         """
         initialisation of the class
         :param model: model used for the maps computations
         """
         self.model = model
         self.batch_size = batch_size
-        if target_layer is None:
-            if isinstance(model, VisionVIT):
-                self.target_layer = model.encoder.layers[-1].ln_1
-            elif isinstance(model, TimmVIT):
-                self.target_layer = model.blocks[-1].norm1
-        else:
-            self.target_layer = target_layer
 
     def __call__(self, x, class_idx=None):
         """
@@ -36,10 +31,21 @@ class ViTCXWrapper:
         :param class_idx: index of the class to explain
         :return: a saliency map in shape (input_size, input_size)
         """
-        return torch.Tensor(ViT_CX(self.model,
-                      x,
-                      self.target_layer,
-                      class_idx,
-                      reshape_function=reshape_function_vit,
-                      gpu_batch=self.batch_size,
-                      ))
+
+        model = copy.deepcopy(self.model)
+        if isinstance(model, VisionVIT):
+            target_layer = model.encoder.layers[-1].ln_1
+        elif isinstance(model, TimmVIT):
+            target_layer = model.blocks[-1].norm1
+        else:
+            raise NotImplementedError("Model not supported")
+
+        saliency = torch.Tensor(ViT_CX(model,
+                                       x,
+                                       target_layer,
+                                       class_idx,
+                                       reshape_function=reshape_function_vit,
+                                       gpu_batch=self.batch_size,
+                                       )
+                                )
+        return saliency
