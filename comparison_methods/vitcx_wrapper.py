@@ -31,21 +31,23 @@ class ViTCXWrapper:
         :param class_idx: index of the class to explain
         :return: a saliency map in shape (input_size, input_size)
         """
+        with torch.enable_grad():
+            model = copy.deepcopy(self.model)
+            if isinstance(model, VisionVIT):
+                target_layer = model.encoder.layers[-1].ln_1
+            elif isinstance(model, TimmVIT):
+                target_layer = model.blocks[-1].norm1
+            else:
+                raise NotImplementedError("Model not supported")
 
-        model = copy.deepcopy(self.model)
-        if isinstance(model, VisionVIT):
-            target_layer = model.encoder.layers[-1].ln_1
-        elif isinstance(model, TimmVIT):
-            target_layer = model.blocks[-1].norm1
-        else:
-            raise NotImplementedError("Model not supported")
-
-        saliency = torch.Tensor(ViT_CX(model,
-                                       x,
-                                       target_layer,
-                                       class_idx,
-                                       reshape_function=reshape_function_vit,
-                                       gpu_batch=self.batch_size,
-                                       )
-                                )
-        return saliency
+            saliency = torch.Tensor(ViT_CX(model,
+                                           x,
+                                           target_layer,
+                                           class_idx,
+                                           reshape_function=reshape_function_vit,
+                                           gpu_batch=self.batch_size,
+                                           )
+                                    )
+            saliency = saliency.detach()
+            del model
+            return saliency
