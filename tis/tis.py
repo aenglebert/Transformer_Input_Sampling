@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 from torchvision.models import VisionTransformer as VisionVIT
 from timm.models.vision_transformer import VisionTransformer as TimmVIT
 
@@ -10,7 +11,15 @@ import math
 
 
 class TIS:
-    def __init__(self, model, n_masks=1024, batch_size=128, tokens_ratio=0.5, normalise=True, verbose=True):
+    def __init__(self,
+                 model,
+                 n_masks=1024,
+                 batch_size=128,
+                 tokens_ratio=0.5,
+                 normalise=True,
+                 verbose=True,
+                 ablation_study=False,
+                 ):
         """
         Create a TIS class to compute saliency maps for a vision transformer
         :param model: The ViT model to explain
@@ -18,6 +27,9 @@ class TIS:
         :param batch_size: Batch size for the computation of the masks scores
         :param tokens_ratio: Ratio of tokens to keep in the masking process
         :param normalise: Bool, normalise the saliency map between [0,1]
+        :param verbose: Bool, print information during the computation
+        :param ablation_study: Bool, if True, use ablation study mode, implying that the perturbation is done on the
+        input image instead of the encoded tokens
         """
 
         # Check that model is a ViT
@@ -31,6 +43,7 @@ class TIS:
         self.n_masks = n_masks
         self.normalise = normalise
         self.verbose = verbose
+        self.ablation_study = ablation_study
 
         if isinstance(tokens_ratio, float):
             tokens_ratio = [tokens_ratio]
@@ -170,6 +183,57 @@ class TIS:
 
         return mask_list, mask_indices_list
 
+    def mask_input(self, x, baseline="random"):
+        """
+        Mask the input image x based on the tokens indices in self.cur_mask_indices
+        :param x: image tensor
+        :param baseline: baseline value for the masked pixels
+        :return: masked image tensor
+        """
+        # Get patch size from the model
+        if isinstance(self.model, VisionVIT):
+            patch_size = self.model.conv_proj.kernel_size
+        elif isinstance(self.model, TimmVIT):
+            patch_size = self.model.patch_embed.proj.kernel_size
+
+        # compute number of patches in height and width
+        n_patches_h = x.shape[2] // patch_size[0]
+        n_patches_w = x.shape[3] // patch_size[1]
+
+        # Create a mask in the shape of the tokens (1D)
+        mask_1d = torch.ones((n_patches_h * n_patches_w)).to(x.device)
+
+        # Create a list of masked images
+        masked_images = []
+
+        for indices in self.cur_mask_indices:
+            # Set the mask to 1 for all tokens
+            mask_1d[:] = 1
+            # Set the mask to 0 for the current tokens indices
+            mask_1d[indices] = 0
+
+            # Reshape the mask in 2d
+            mask = mask_1d.reshape((1, 1, n_patches_h, n_patches_w))
+
+            # Upsample the mask to the size of the image
+            mask = F.interpolate(mask, size=(x.shape[2], x.shape[3]), mode='nearest')
+
+            if baseline == "random":
+                baseline_tensor = torch.rand_like(x)
+            elif baseline == "zero":
+                baseline_tensor = torch.zeros_like(x)
+            else:
+                print("Baseline not recognised")
+                exit(1)
+
+            # Apply the mask to the image
+            masked_images.append(x * mask + baseline_tensor * (1 - mask))
+
+        # Create a batch of masked images
+        x = torch.cat(masked_images, dim=0)
+
+        return x
+
     def generate_scores(self, x, class_idx, mask_indices_list):
         """
         Generate the masks scores
@@ -213,14 +277,16 @@ class TIS:
                 return sampled_tokens
                 # return torch.cat([cls, sampled_tokens], dim=1)
 
-        # Register the sampling hook at the beginning of the encoder, after the positional embedding
-        if isinstance(self.model, VisionVIT):
-            tokens_sampling_hook = self.model.encoder.dropout.register_forward_hook(tokens_sampling_hook_fn)
-        elif isinstance(self.model, TimmVIT):
-            tokens_sampling_hook = self.model.pos_drop.register_forward_hook(tokens_sampling_hook_fn)
-        else:
-            print("Model not recognised")
-            exit(1)
+
+        if not self.ablation_study:
+            # Register the sampling hook at the beginning of the encoder, after the positional embedding
+            if isinstance(self.model, VisionVIT):
+                tokens_sampling_hook = self.model.encoder.dropout.register_forward_hook(tokens_sampling_hook_fn)
+            elif isinstance(self.model, TimmVIT):
+                tokens_sampling_hook = self.model.pos_drop.register_forward_hook(tokens_sampling_hook_fn)
+            else:
+                print("Model not recognised")
+                exit(1)
 
         # Compute scores by batch
         for idx in tqdm(range(math.ceil(len(mask_indices_list) / self.batch_size)), disable=(not self.verbose)):
@@ -228,8 +294,12 @@ class TIS:
             selection_slice = slice(idx * self.batch_size, min((idx + 1) * self.batch_size, len(mask_indices_list)))
             self.cur_mask_indices = mask_indices_list[selection_slice]
 
-            # Forward pass with tokens sampling performed by the hook
-            result = self.model(x).detach()
+            if self.ablation_study:
+                # Mask the input
+                result = self.model(self.mask_input(x)).detach()
+            else:
+                # Forward pass with tokens sampling performed by the hook
+                result = self.model(x).detach()
 
             # Get the softmax result for the explored class
             result = torch.softmax(result, dim=1)
@@ -239,7 +309,8 @@ class TIS:
             scores.append(score)
 
         # Remove sampling hook
-        tokens_sampling_hook.remove()
+        if not self.ablation_study:
+            tokens_sampling_hook.remove()
         self.cur_mask_indices = None
 
         # Concatenate all the scores into a tensor
