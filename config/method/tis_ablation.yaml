@@ -1,0 +1,8 @@
+name: tis_ablation
+init:
+  _target_: tis.TIS
+  n_masks: 1024
+  batch_size: 128
+  tokens_ratio: 0.5
+  verbose: false
+  ablation_study: true
