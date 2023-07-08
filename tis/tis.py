@@ -201,16 +201,16 @@ class TIS:
         n_patches_w = x.shape[3] // patch_size[1]
 
         # Create a mask in the shape of the tokens (1D)
-        mask_1d = torch.ones((n_patches_h * n_patches_w)).to(x.device)
+        mask_1d = torch.zeros((n_patches_h * n_patches_w)).to(x.device)
 
         # Create a list of masked images
         masked_images = []
 
         for indices in self.cur_mask_indices:
-            # Set the mask to 1 for all tokens
-            mask_1d[:] = 1
-            # Set the mask to 0 for the current tokens indices
-            mask_1d[indices] = 0
+            # Set the mask to 0 for all tokens
+            mask_1d[:] = 0
+            # Set the mask to 1 for the current tokens indices
+            mask_1d[indices] = 1
 
             # Reshape the mask in 2d
             mask = mask_1d.reshape((1, 1, n_patches_h, n_patches_w))
